@@ -861,6 +861,15 @@ export default function Home() {
                     </div>
                   })}
                 </UnorderedList>
+
+                <UnorderedList className='mb-8'>
+                  {[19,21,23].map((value, id) => {
+                    return <div className='grid grid-cols-2 gap-4' key={id}>
+                      <ListItem color='blue.500' >{value} grados</ListItem>
+                      <p>12:00</p>
+                    </div>
+                  })}
+                </UnorderedList>
               </div>
 
               <div className='grid grid-cols-4'>
