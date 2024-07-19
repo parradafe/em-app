@@ -1,113 +1,937 @@
-import Image from "next/image";
+'use client'
+
+import { Input } from '@chakra-ui/react'
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+} from '@chakra-ui/react'
+import { Divider } from '@chakra-ui/react'
+import { Card, CardBody, Box } from '@chakra-ui/react'
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
+import { Select } from '@chakra-ui/react'
+import {
+  ListItem,
+  UnorderedList,
+} from '@chakra-ui/react'
+import Image from 'next/image';
+
+import Add from '@/icons/add.svg';
+import Machine from '@/icons/machine.svg';
+import Checklist from '@/icons/checklist.svg';
+import Watch from '@/icons/watch.svg';
+import Search from '@/icons/search.svg';
+
+import { Button } from '@chakra-ui/react'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+} from '@chakra-ui/react'
+import { useState } from 'react'
 
 export default function Home() {
+
+  const menu = ['PRODUCTS', 'EXTRUSION', 'ARCHIVE', 'SEARCH'];
+  const [currentPage, setCurrentPage] = useState(menu[3]);
+
+  const data = [
+    {
+      id: 0,
+      name: 'Polietileno',
+      unit: 'Gr(s)'
+    },
+    {
+      id: 1,
+      name: 'Polietileno ll',
+      unit: 'Kg(s)'
+    }
+  ];
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <>
+      {currentPage === menu[0] &&
+        <div>
+          <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Productos </h1>
+          <Card className='mx-6 mt-6'>
+            <CardBody>
+              <form action="" className='mb-16'>
+                <label htmlFor="product-name">Nombre del producto</label>
+                <Input placeholder='Polietileno' id="product-name" className='mb-4' />
+
+                <label htmlFor="product-name">Unidad de medida</label>
+                <Input placeholder='Gr' id="product-name" className='mb-8' />
+
+                <Button colorScheme='green' className='w-full'>Guardar</Button>
+              </form>
+
+              {data.length > 0 && <TableContainer>
+                <Table variant='striped' size='md'>
+                  <Thead>
+                    <Tr>
+                      <Th>Nombre</Th>
+                      <Th>Unidad</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {data.map(({ id, name, unit }) =>
+                      <Tr key={id}>
+                        <Td>{name}</Td>
+                        <Td>{unit}</Td>
+                      </Tr>
+                    )}
+                  </Tbody>
+                  {/* <Tfoot>
+            <Tr>
+              <Th>Nombre</Th>
+              <Th>Unidad</Th>
+            </Tr>
+          </Tfoot> */}
+                </Table>
+              </TableContainer>}
+            </CardBody>
+          </Card >
+        </div>
+      }
+
+      {/*       <Box position='relative' padding='10'>
+        <Divider />
+        <AbsoluteCenter bg='white' px='4'>
+          DURANTE EXTRUSION
+        </AbsoluteCenter>
+      </Box> */}
+
+
+      {currentPage === menu[1] &&
+        <>
+          <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Extrusión </h1>
+
+          <Tabs isFitted colorScheme='green' variant='enclosed'>
+            <TabList mb='1em'>
+              <Tab>Mezcla</Tab>
+              <Tab>Maquina</Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel className='min-h-52'>
+                <Card>
+                  <CardBody>
+                    <div className='flex w-full justify-around px-4 mb-2 gap-6'>
+                      <div className='w-[80%]'>
+                        <label htmlFor="product-selector">Producto</label>
+                        <Select id="product-selector" placeholder='Select option'>
+                          {data.map(({ name, id }) => <option key={id} value='option1'>{name}</option>)}
+                        </Select>
+                      </div>
+
+                      <div className='w-[20%]'>
+                        <label htmlFor="product-name">Valor</label>
+                        <Input placeholder='Gr' id="product-name" type='number' />
+                      </div>
+                    </div>
+                    <div className='flex justify-end'>
+                      <Image src={Add} alt='add product' />
+                    </div>
+                    <UnorderedList className='mb-8'>
+                      {data.map(({ id, name }) => {
+                        return <div className='grid grid-cols-3 gap-4' key={id}>
+                          <ListItem color='green.500' >{name}</ListItem>
+                          <p>20 Gr(s)</p>
+                          <p className=''>Editar</p>
+                        </div>
+                      })}
+                    </UnorderedList>
+
+                    <Button colorScheme='green' className='w-full'>Guardar</Button>
+                  </CardBody>
+                </Card>
+              </TabPanel>
+              <TabPanel className='min-h-[20rem]'>
+
+                <Card>
+                  <CardBody>
+                    <div className='grid grid-cols-3 gap-y-3 mb-8'>
+                      <div className='col-span-2'>
+                        <p>Knob #1</p>
+                      </div>
+                      <div>
+                        <Input placeholder='0' type='number' id="temperature-0" />
+                      </div>
+                      <div className='col-span-2'>
+                        <p>Knob #2</p>
+                      </div>
+                      <div>
+                        <Input placeholder='0' type='number' id="temperature-0" />
+                      </div>
+                      <div className='col-span-2'>
+                        <p>Knob #3</p>
+                      </div>
+                      <div>
+                        <Input placeholder='0' type='number' id="temperature-0" />
+                      </div>
+                      <div className='col-span-2'>
+                        <p>Knob #4</p>
+                      </div>
+                      <div>
+                        <Input placeholder='0' type='number' id="temperature-0" />
+                      </div>
+                      <div className='col-span-2'>
+                        <p>T.Ambiente</p>
+                      </div>
+                      <div>
+                        <Input placeholder='0' id="temperature-0" />
+                      </div>
+                    </div>
+                    <textarea className='border-2 rounded-md w-full p-2' placeholder='notas' rows={7}></textarea>
+                  </CardBody>
+                </Card>
+                <Button colorScheme='green' className='w-full mt-4'>Registrar</Button>
+
+
+
+                <Card className='mt-8'>
+                  <CardBody>
+                    <Accordion allowToggle>
+                      <AccordionItem>
+                        <h2>
+                          <AccordionButton>
+                            <Box as='span' flex='1' textAlign='left'>
+                              Configuración 1
+                            </Box>
+                            <AccordionIcon />
+                          </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                          <div className='grid grid-cols-4'>
+                            <div className='col-span-3'>
+                              Knob #1
+                            </div>
+                            <div>
+                              23
+                            </div>
+
+                            <div className='col-span-3'>
+                              Knob #2
+                            </div>
+                            <div>
+                              23
+                            </div>
+
+                            <div className='col-span-3'>
+                              Knob #3
+                            </div>
+                            <div>
+                              23
+                            </div>
+
+                            <div className='col-span-3'>
+                              Knob #4
+                            </div>
+                            <div>
+                              23
+                            </div>
+
+                            <div className='col-span-3'>
+                              T.Ambiente
+                            </div>
+                            <div>
+                              23
+                            </div>
+                          </div>
+
+                          <div className='mt-6 border-2 rounded-md p-2'>
+                            <p>
+                              <textarea disabled value='Texto'></textarea>
+                            </p>
+                          </div>
+                        </AccordionPanel>
+                      </AccordionItem>
+
+                    </Accordion>
+                    <div className='flex justify-end'>
+                      <Image src={Add} alt='add product' />
+                    </div>
+                  </CardBody>
+                </Card>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+
+          <div className='text-center'>
+            <Button colorScheme='green' className='w-[90%] lg:w-[95%] mt-4 mb-20' height={12}>Finalizar Jornada</Button>
+          </div>
+        </>
+      }
+
+      {/* Archive Zone */}
+
+      {
+        currentPage === menu[2] &&
+        <>
+          <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Archivo </h1>
+          <Card className='mx-2'>
+            <CardBody>
+              <p className='mb-4'>2024-07-18</p>
+              <Card>
+                <CardBody>
+                  <p> Mezcla </p>
+                  <UnorderedList className='mb-8'>
+                    {data.map(({ id, name }) => {
+                      return <div className='grid grid-cols-4 gap-4' key={id}>
+                        <ListItem color='green.500' className='col-span-3'>{name}</ListItem>
+                        <p>20 Gr(s)</p>
+                      </div>
+                    })}
+                  </UnorderedList>
+
+                  <Accordion allowToggle>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 1
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 2
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                  </Accordion>
+
+                </CardBody>
+              </Card>
+
+
+              <Card className='mt-4'>
+                <CardBody>
+                  <p> Mezcla </p>
+                  <UnorderedList className='mb-8'>
+                    {data.map(({ id, name }) => {
+                      return <div className='grid grid-cols-4 gap-4' key={id}>
+                        <ListItem color='green.500' className='col-span-3'>{name}</ListItem>
+                        <p>20 Gr(s)</p>
+                      </div>
+                    })}
+                  </UnorderedList>
+
+                  <Accordion allowToggle>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 1
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 2
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                  </Accordion>
+
+                </CardBody>
+              </Card>
+
+              <Divider className='my-6' />
+
+
+              <p className='mb-4'>2024-05-12</p>
+              <Card>
+                <CardBody>
+                  <p> Mezcla </p>
+                  <UnorderedList className='mb-8'>
+                    {data.map(({ id, name }) => {
+                      return <div className='grid grid-cols-4 gap-4' key={id}>
+                        <ListItem color='green.500' className='col-span-3'>{name}</ListItem>
+                        <p>20 Gr(s)</p>
+                      </div>
+                    })}
+                  </UnorderedList>
+
+                  <Accordion allowToggle>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 1
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 2
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                  </Accordion>
+
+                </CardBody>
+              </Card>
+
+
+              <Card className='mt-4'>
+                <CardBody>
+                  <p> Mezcla </p>
+                  <UnorderedList className='mb-8'>
+                    {data.map(({ id, name }) => {
+                      return <div className='grid grid-cols-4 gap-4' key={id}>
+                        <ListItem color='green.500' className='col-span-3'>{name}</ListItem>
+                        <p>20 Gr(s)</p>
+                      </div>
+                    })}
+                  </UnorderedList>
+
+                  <Accordion allowToggle>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 1
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+                    <AccordionItem>
+                      <h2>
+                        <AccordionButton>
+                          <Box as='span' flex='1' textAlign='left'>
+                            Configuración 2
+                          </Box>
+                          <AccordionIcon />
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel pb={4}>
+                        <div className='grid grid-cols-4'>
+                          <div className='col-span-3'>
+                            Knob #1
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #2
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #3
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            Knob #4
+                          </div>
+                          <div>
+                            23
+                          </div>
+
+                          <div className='col-span-3'>
+                            T.Ambiente
+                          </div>
+                          <div>
+                            23
+                          </div>
+                        </div>
+
+                        <div className='mt-6 border-2 rounded-md p-2'>
+                          <p>
+                            <textarea disabled value='Texto'></textarea>
+                          </p>
+                        </div>
+                      </AccordionPanel>
+                    </AccordionItem>
+
+                  </Accordion>
+
+                </CardBody>
+              </Card>
+
+            </CardBody>
+          </Card>
+
+          <div className='h-24'></div>
+        </>
+      }
+
+      {
+        currentPage === menu[3] &&
+        <>
+        <div className='mb-20'>
+          <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Consultas </h1>
+          <Card className='mx-4 mb-12'>
+            <CardBody>
+              <form action="">
+                <div className='mb-8'>
+                  <label htmlFor="product-selector">Buscar por</label>
+                  <Select id="product-selector" placeholder='Seleccione'>
+                    {[{ name: 'Knobs' }, { name: 'Mezcla' }].map(({ name }, id) => <option key={id} value='option1'>{name}</option>)}
+                  </Select>
+
+                </div>
+
+                <div className='grid grid-cols-4 gap-y-3 mb-8'>
+                  <div className='col-span-3'>
+                    <p>Knob #1</p>
+                  </div>
+                  <div>
+                    <Input placeholder='0' type='number' id="temperature-0" />
+                  </div>
+                  <div className='col-span-3'>
+                    <p>Knob #2</p>
+                  </div>
+                  <div>
+                    <Input placeholder='0' type='number' id="temperature-0" />
+                  </div>
+                  <div className='col-span-3'>
+                    <p>Knob #3</p>
+                  </div>
+                  <div>
+                    <Input placeholder='0' type='number' id="temperature-0" />
+                  </div>
+                  <div className='col-span-3'>
+                    <p>Knob #4</p>
+                  </div>
+                  <div>
+                    <Input placeholder='0' type='number' id="temperature-0" />
+                  </div>
+                </div>
+              </form>
+
+              <div className='text-center'>
+                <Button colorScheme='green' className='w-[90%] lg:w-[95%]' height={12}>Buscar</Button>
+              </div>
+            </CardBody>
+          </Card>
+
+          <Card className='mx-4'>
+            <CardBody>
+              <p className='mb-8'>2024-07-19</p>
+
+              <div>
+                <UnorderedList className='mb-8'>
+                  {data.map(({ id, name }) => {
+                    return <div className='grid grid-cols-2 gap-4' key={id}>
+                      <ListItem color='green.500' >{name}</ListItem>
+                      <p>20 Gr(s)</p>
+                    </div>
+                  })}
+                </UnorderedList>
+              </div>
+
+              <div className='grid grid-cols-4'>
+                <div className='col-span-3'>
+                  Knob #1
+                </div>
+                <div>
+                  23
+                </div>
+
+                <div className='col-span-3'>
+                  Knob #2
+                </div>
+                <div>
+                  23
+                </div>
+
+                <div className='col-span-3'>
+                  Knob #3
+                </div>
+                <div>
+                  23
+                </div>
+
+                <div className='col-span-3'>
+                  Knob #4
+                </div>
+                <div>
+                  23
+                </div>
+
+                <div className='col-span-3'>
+                  T.Ambiente
+                </div>
+                <div>
+                  23
+                </div>
+              </div>
+
+              <div className='mt-6 border-2 rounded-md p-2'>
+                <p>
+                  <textarea disabled value='Texto'></textarea>
+                </p>
+              </div>
+            </CardBody>
+          </Card>
+
+        </div>
+        </>
+      }
+
+      {/* MENU */}
+
+      <div className='fixed bottom-0 h-14 bg-[#56b181] text-white z-10 w-full flex justify-around items-center p-2'>
+        <div className='flex items-center' onClick={() => setCurrentPage(menu[0])}>
+          <Image src={Checklist} alt='show products' />
+        </div>
+        <Divider orientation='vertical' />
+        <div className='flex items-center ' onClick={() => setCurrentPage(menu[1])}>
+          <Image src={Machine} alt='Go to extrusion' />
+        </div>
+        <Divider orientation='vertical' />
+        <div className='flex items-center ' onClick={() => setCurrentPage(menu[2])}>
+          <Image src={Watch} alt='Go to archive' />
+        </div>
+        <Divider orientation='vertical' />
+        <div className='flex items-center ' onClick={() => setCurrentPage(menu[3])}>
+          <Image src={Search} alt='Search Data' />
         </div>
       </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   );
 }
