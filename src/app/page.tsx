@@ -35,11 +35,12 @@ import {
   AccordionIcon,
 } from '@chakra-ui/react'
 import { useState } from 'react'
+import {  useProductStore } from './store/product.store'
 
 export default function Home() {
 
   const menu = ['PRODUCTS', 'EXTRUSION', 'ARCHIVE', 'SEARCH'];
-  const [currentPage, setCurrentPage] = useState(menu[3]);
+  const [currentPage, setCurrentPage] = useState(menu[0]);
 
   const data = [
     {
@@ -54,6 +55,29 @@ export default function Home() {
     }
   ];
 
+  /** controladores */
+
+  /* Products */
+
+  const productName = useProductStore((state : any) => state.name);
+  const productUnit = useProductStore((state : any) => state.unit);
+
+  const setProductName = useProductStore((state : any) => state.setName);
+  const setProductUnit = useProductStore((state : any) => state.setUnit);
+
+  const addProduct = useProductStore((state : any) => state.registerProduct);
+  const products = useProductStore((state : any) => state.products);
+
+
+  const addProductHandler = () => {    
+    addProduct({
+      name : productName.target.value,
+      unit : productUnit.target.value
+    })
+  }
+
+  /** fin controladores */
+
   return (
     <>
       {currentPage === menu[0] &&
@@ -61,15 +85,15 @@ export default function Home() {
           <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Productos </h1>
           <Card className='mx-6 mt-6'>
             <CardBody>
-              <form action="" className='mb-16'>
+              <div className='mb-16'>
                 <label htmlFor="product-name">Nombre del producto</label>
-                <Input placeholder='Polietileno' id="product-name" className='mb-4' />
+                <Input placeholder='Polietileno' id="product-name" className='mb-4' onChange={setProductName}/>
 
                 <label htmlFor="product-name">Unidad de medida</label>
-                <Input placeholder='Gr' id="product-name" className='mb-8' />
+                <Input placeholder='Gr' id="product-name" className='mb-8' onChange={setProductUnit}/>
 
-                <Button colorScheme='green' className='w-full'>Guardar</Button>
-              </form>
+                <Button colorScheme='green' className='w-full' onClick={addProductHandler}>Guardar</Button>
+              </div>
 
               {data.length > 0 && <TableContainer>
                 <Table variant='striped' size='md'>
@@ -80,7 +104,7 @@ export default function Home() {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {data.map(({ id, name, unit }) =>
+                    {products.map(({ id, name, unit }) =>
                       <Tr key={id}>
                         <Td>{name}</Td>
                         <Td>{unit}</Td>
@@ -911,7 +935,7 @@ export default function Home() {
 
               <div className='mt-6 border-2 rounded-md p-2'>
                 <p>
-                  <textarea disabled value='Texto'></textarea>
+                  <textarea value='Texto'></textarea>
                 </p>
               </div>
             </CardBody>
