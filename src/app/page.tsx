@@ -25,6 +25,8 @@ import Machine from '@/icons/machine.svg';
 import Checklist from '@/icons/checklist.svg';
 import Watch from '@/icons/watch.svg';
 import Search from '@/icons/search.svg';
+import Edit from '@/icons/edit.svg';
+import Remove from '@/icons/remove.svg';
 
 import { Button } from '@chakra-ui/react'
 import {
@@ -35,12 +37,13 @@ import {
   AccordionIcon,
 } from '@chakra-ui/react'
 import { useState } from 'react'
-import {  useProductStore } from './store/product.store'
+import { useProductStore } from './store/product.store'
+import { useMixStore } from './store/mix.store'
 
 export default function Home() {
 
   const menu = ['PRODUCTS', 'EXTRUSION', 'ARCHIVE', 'SEARCH'];
-  const [currentPage, setCurrentPage] = useState(menu[0]);
+  const [currentPage, setCurrentPage] = useState(menu[1]);
 
   const data = [
     {
@@ -55,28 +58,70 @@ export default function Home() {
     }
   ];
 
+  const datat = [
+    {
+      productId : '123',
+      productName : 'xx',
+      productQuantity : 23
+    },
+    {
+      productId : '321',
+      productName : 'yy',
+      productQuantity : 56
+    }
+  ]
+
   /** controladores */
 
   /* Products */
 
-  const productName = useProductStore((state : any) => state.name);
-  const productUnit = useProductStore((state : any) => state.unit);
+  const productName = useProductStore((state: any) => state.name);
+  const productUnit = useProductStore((state: any) => state.unit);
 
-  const setProductName = useProductStore((state : any) => state.setName);
-  const setProductUnit = useProductStore((state : any) => state.setUnit);
+  const setProductName = useProductStore((state: any) => state.setName);
+  const setProductUnit = useProductStore((state: any) => state.setUnit);
 
-  const addProduct = useProductStore((state : any) => state.registerProduct);
-  const products = useProductStore((state : any) => state.products);
+  const addProduct = useProductStore((state: any) => state.registerProduct);
+  const products = useProductStore((state: any) => state.products);
 
 
-  const addProductHandler = () => {    
+  const addProductHandler = () => {
     addProduct({
-      name : productName.target.value,
-      unit : productUnit.target.value
+      name: productName.target.value,
+      unit: productUnit.target.value
     })
   }
 
+  /** Mix */
+
+  const setProduct = useMixStore((state) => state.setProduct);
+  const setProductQuantity = useMixStore((state) => state.setQuantity);
+  const addProductToMix = useMixStore((state) => state.addProduct);
+  const editItem = useMixStore((state) => state.editProduct);
+  const mixProducts = useMixStore((state) => state.products);
+  const loadItem = useMixStore((state) => state.loadItem);
+  const removeItem = useMixStore((state) => state.removeProduct);
+
+  const productLabel = useMixStore((state) => state.productName);
+  const productQuantity = useMixStore((state) => state.productQuantity);
+
+  const productNameHandler = (event) => {
+    const value = event.target.value;
+    const id = data.find(p => p.name === value)?.id;
+
+    setProduct(value, id)
+  }
+
+  const editItemHandler = (productId) => {
+    loadItem(productId)
+  }
+
+  const removeItemHandler = (productId) => {
+    removeItem(productId)
+  }
+
   /** fin controladores */
+
 
   return (
     <>
@@ -87,10 +132,10 @@ export default function Home() {
             <CardBody>
               <div className='mb-16'>
                 <label htmlFor="product-name">Nombre del producto</label>
-                <Input placeholder='Polietileno' id="product-name" className='mb-4' onChange={setProductName}/>
+                <Input placeholder='Polietileno' autoComplete='off' id="product-name" className='mb-4' onChange={setProductName} />
 
                 <label htmlFor="product-name">Unidad de medida</label>
-                <Input placeholder='Gr' id="product-name" className='mb-8' onChange={setProductUnit}/>
+                <Input placeholder='Gr' autoComplete='off' id="product-name" className='mb-8' onChange={setProductUnit} />
 
                 <Button colorScheme='green' className='w-full' onClick={addProductHandler}>Guardar</Button>
               </div>
@@ -124,14 +169,6 @@ export default function Home() {
         </div>
       }
 
-      {/*       <Box position='relative' padding='10'>
-        <Divider />
-        <AbsoluteCenter bg='white' px='4'>
-          DURANTE EXTRUSION
-        </AbsoluteCenter>
-      </Box> */}
-
-
       {currentPage === menu[1] &&
         <>
           <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Extrusión </h1>
@@ -148,25 +185,30 @@ export default function Home() {
                     <div className='flex w-full justify-around px-4 mb-2 gap-6'>
                       <div className='w-[80%]'>
                         <label htmlFor="product-selector">Producto</label>
-                        <Select id="product-selector" placeholder='Select option'>
-                          {data.map(({ name, id }) => <option key={id} value='option1'>{name}</option>)}
+                        <Select id="product-selector" placeholder='Select option' onChange={productNameHandler} value={productLabel}>
+                          {data.map(({ name, id }) => <option key={id} value={name}>{name}</option>)}
                         </Select>
                       </div>
 
                       <div className='w-[20%]'>
                         <label htmlFor="product-name">Valor</label>
-                        <Input placeholder='Gr' id="product-name" type='number' />
+                        <Input placeholder='Gr' id="product-name" type='number' value={productQuantity} onChange={(e) => setProductQuantity((e.target.value))} />
                       </div>
                     </div>
-                    <div className='flex justify-end'>
-                      <Image src={Add} alt='add product' />
+                    <div className='flex justify-end mb-4'>
+                      <Image src={Add} alt='add product' onClick={addProductToMix} />
                     </div>
                     <UnorderedList className='mb-8'>
-                      {data.map(({ id, name }) => {
-                        return <div className='grid grid-cols-3 gap-4' key={id}>
-                          <ListItem color='green.500' >{name}</ListItem>
-                          <p>20 Gr(s)</p>
-                          <p className=''>Editar</p>
+                      {mixProducts.map(({ productName, productQuantity , productId}, id) => {
+                        return <div className='grid grid-cols-6 gap-4' key={id}>
+                          <ListItem color='green.500' className='col-span-3'>{productName}</ListItem>
+                          <p>{productQuantity}</p>
+                          <div className='flex items-center' onClick={() => editItemHandler(productId)}>
+                            <Image src={Edit} alt='edit item' />
+                          </div>
+                          <div className='flex items-center' onClick={() => removeItemHandler(productId)}>
+                            <Image src={Remove} alt='remove item' />
+                          </div>
                         </div>
                       })}
                     </UnorderedList>
@@ -825,123 +867,123 @@ export default function Home() {
       {
         currentPage === menu[3] &&
         <>
-        <div className='mb-20'>
-          <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Consultas </h1>
-          <Card className='mx-4 mb-12'>
-            <CardBody>
-              <form action="">
-                <div className='mb-8'>
-                  <label htmlFor="product-selector">Buscar por</label>
-                  <Select id="product-selector" placeholder='Seleccione'>
-                    {[{ name: 'Knobs' }, { name: 'Mezcla' }].map(({ name }, id) => <option key={id} value='option1'>{name}</option>)}
-                  </Select>
+          <div className='mb-20'>
+            <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Consultas </h1>
+            <Card className='mx-4 mb-12'>
+              <CardBody>
+                <form action="">
+                  <div className='mb-8'>
+                    <label htmlFor="product-selector">Buscar por</label>
+                    <Select id="product-selector" placeholder='Seleccione'>
+                      {[{ name: 'Knobs' }, { name: 'Mezcla' }].map(({ name }, id) => <option key={id} value='option1'>{name}</option>)}
+                    </Select>
 
-                </div>
+                  </div>
 
-                <div className='grid grid-cols-4 gap-y-3 mb-8'>
-                  <div className='col-span-3'>
-                    <p>Knob #1</p>
-                  </div>
-                  <div>
-                    <Input placeholder='0' type='number' id="temperature-0" />
-                  </div>
-                  <div className='col-span-3'>
-                    <p>Knob #2</p>
-                  </div>
-                  <div>
-                    <Input placeholder='0' type='number' id="temperature-0" />
-                  </div>
-                  <div className='col-span-3'>
-                    <p>Knob #3</p>
-                  </div>
-                  <div>
-                    <Input placeholder='0' type='number' id="temperature-0" />
-                  </div>
-                  <div className='col-span-3'>
-                    <p>Knob #4</p>
-                  </div>
-                  <div>
-                    <Input placeholder='0' type='number' id="temperature-0" />
-                  </div>
-                </div>
-              </form>
-
-              <div className='text-center'>
-                <Button colorScheme='green' className='w-[90%] lg:w-[95%]' height={12}>Buscar</Button>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card className='mx-4'>
-            <CardBody>
-              <p className='mb-8'>2024-07-19</p>
-
-              <div>
-                <UnorderedList className='mb-8'>
-                  {data.map(({ id, name }) => {
-                    return <div className='grid grid-cols-2 gap-4' key={id}>
-                      <ListItem color='green.500' >{name}</ListItem>
-                      <p>20 Gr(s)</p>
+                  <div className='grid grid-cols-4 gap-y-3 mb-8'>
+                    <div className='col-span-3'>
+                      <p>Knob #1</p>
                     </div>
-                  })}
-                </UnorderedList>
-
-                <UnorderedList className='mb-8'>
-                  {[19,21,23].map((value, id) => {
-                    return <div className='grid grid-cols-2 gap-4' key={id}>
-                      <ListItem color='blue.500' >{value} grados</ListItem>
-                      <p>12:00</p>
+                    <div>
+                      <Input placeholder='0' type='number' id="temperature-0" />
                     </div>
-                  })}
-                </UnorderedList>
-              </div>
+                    <div className='col-span-3'>
+                      <p>Knob #2</p>
+                    </div>
+                    <div>
+                      <Input placeholder='0' type='number' id="temperature-0" />
+                    </div>
+                    <div className='col-span-3'>
+                      <p>Knob #3</p>
+                    </div>
+                    <div>
+                      <Input placeholder='0' type='number' id="temperature-0" />
+                    </div>
+                    <div className='col-span-3'>
+                      <p>Knob #4</p>
+                    </div>
+                    <div>
+                      <Input placeholder='0' type='number' id="temperature-0" />
+                    </div>
+                  </div>
+                </form>
 
-              <div className='grid grid-cols-4'>
-                <div className='col-span-3'>
-                  Knob #1
+                <div className='text-center'>
+                  <Button colorScheme='green' className='w-[90%] lg:w-[95%]' height={12}>Buscar</Button>
                 </div>
+              </CardBody>
+            </Card>
+
+            <Card className='mx-4'>
+              <CardBody>
+                <p className='mb-8'>2024-07-19</p>
+
                 <div>
-                  23
+                  <UnorderedList className='mb-8'>
+                    {data.map(({ id, name }) => {
+                      return <div className='grid grid-cols-2 gap-4' key={id}>
+                        <ListItem color='green.500' >{name}</ListItem>
+                        <p>20 Gr(s)</p>
+                      </div>
+                    })}
+                  </UnorderedList>
+
+                  <UnorderedList className='mb-8'>
+                    {[19, 21, 23].map((value, id) => {
+                      return <div className='grid grid-cols-2 gap-4' key={id}>
+                        <ListItem color='blue.500' >{value} grados</ListItem>
+                        <p>12:00</p>
+                      </div>
+                    })}
+                  </UnorderedList>
                 </div>
 
-                <div className='col-span-3'>
-                  Knob #2
-                </div>
-                <div>
-                  23
+                <div className='grid grid-cols-4'>
+                  <div className='col-span-3'>
+                    Knob #1
+                  </div>
+                  <div>
+                    23
+                  </div>
+
+                  <div className='col-span-3'>
+                    Knob #2
+                  </div>
+                  <div>
+                    23
+                  </div>
+
+                  <div className='col-span-3'>
+                    Knob #3
+                  </div>
+                  <div>
+                    23
+                  </div>
+
+                  <div className='col-span-3'>
+                    Knob #4
+                  </div>
+                  <div>
+                    23
+                  </div>
+
+                  <div className='col-span-3'>
+                    T.Ambiente
+                  </div>
+                  <div>
+                    23
+                  </div>
                 </div>
 
-                <div className='col-span-3'>
-                  Knob #3
+                <div className='mt-6 border-2 rounded-md p-2'>
+                  <p>
+                    <textarea value='Texto'></textarea>
+                  </p>
                 </div>
-                <div>
-                  23
-                </div>
+              </CardBody>
+            </Card>
 
-                <div className='col-span-3'>
-                  Knob #4
-                </div>
-                <div>
-                  23
-                </div>
-
-                <div className='col-span-3'>
-                  T.Ambiente
-                </div>
-                <div>
-                  23
-                </div>
-              </div>
-
-              <div className='mt-6 border-2 rounded-md p-2'>
-                <p>
-                  <textarea value='Texto'></textarea>
-                </p>
-              </div>
-            </CardBody>
-          </Card>
-
-        </div>
+          </div>
         </>
       }
 
