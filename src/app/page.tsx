@@ -39,6 +39,7 @@ import {
 import { useState } from 'react'
 import { useProductStore } from './store/product.store'
 import { useMixStore } from './store/mix.store'
+import { useMachineConfigStore } from './store/machine.store'
 
 export default function Home() {
 
@@ -120,6 +121,14 @@ export default function Home() {
     removeItem(productId)
   }
 
+
+  // machine config
+  const setKnobData = useMachineConfigStore( (state) => state.setKnobData )
+  const saveCombination = useMachineConfigStore( state => state.saveCombination )
+  const setRoomTemperature = useMachineConfigStore( state => state.setRoomTemperature )
+  const setNote = useMachineConfigStore( state => state.setNote )
+  const machineCombinations = useMachineConfigStore( state => state.combinations )
+
   /** fin controladores */
 
 
@@ -186,7 +195,7 @@ export default function Home() {
                       <div className='w-[80%]'>
                         <label htmlFor="product-selector">Producto</label>
                         <Select id="product-selector" placeholder='Select option' onChange={productNameHandler} value={productLabel}>
-                          {data.map(({ name, id }) => <option key={id} value={name}>{name}</option>)}
+                          {products.map(({ name, id }) => <option key={id} value={name}>{name}</option>)}
                         </Select>
                       </div>
 
@@ -200,7 +209,7 @@ export default function Home() {
                     </div>
                     <UnorderedList className='mb-8'>
                       {mixProducts.map(({ productName, productQuantity , productId}, id) => {
-                        return <div className='grid grid-cols-6 gap-4' key={id}>
+                        return <div className='grid grid-cols-6 gap-4 mb-4' key={id}>
                           <ListItem color='green.500' className='col-span-3'>{productName}</ListItem>
                           <p>{productQuantity}</p>
                           <div className='flex items-center' onClick={() => editItemHandler(productId)}>
@@ -226,48 +235,46 @@ export default function Home() {
                         <p>Knob #1</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-0" />
+                        <Input placeholder='0' type='number' id="temperature-0" onChange={(e) => setKnobData('one' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>Knob #2</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-0" />
+                        <Input placeholder='0' type='number' id="temperature-1" onChange={(e) => setKnobData('two' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>Knob #3</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-0" />
+                        <Input placeholder='0' type='number' id="temperature-2" onChange={(e) => setKnobData('three' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>Knob #4</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-0" />
+                        <Input placeholder='0' type='number' id="temperature-3" onChange={(e) => setKnobData('four' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>T.Ambiente</p>
                       </div>
                       <div>
-                        <Input placeholder='0' id="temperature-0" />
+                        <Input placeholder='0' id="temperature-4"  onChange={(e) => setRoomTemperature(e.target.value)}/>
                       </div>
                     </div>
-                    <textarea className='border-2 rounded-md w-full p-2' placeholder='notas' rows={7}></textarea>
+                    <textarea className='border-2 rounded-md w-full p-2' placeholder='notas' rows={7} onChange={(e) => setNote(e.target.value)}></textarea>
                   </CardBody>
                 </Card>
-                <Button colorScheme='green' className='w-full mt-4'>Registrar</Button>
-
-
+                <Button colorScheme='green' className='w-full mt-4' onClick={saveCombination}>Registrar</Button>
 
                 <Card className='mt-8'>
                   <CardBody>
                     <Accordion allowToggle>
-                      <AccordionItem>
+                      { machineCombinations?.map(({knobs, notes, room_temperature}, i) => <AccordionItem>
                         <h2>
                           <AccordionButton>
                             <Box as='span' flex='1' textAlign='left'>
-                              Configuración 1
+                              Configuración {i + 1}
                             </Box>
                             <AccordionIcon />
                           </AccordionButton>
@@ -278,45 +285,45 @@ export default function Home() {
                               Knob #1
                             </div>
                             <div>
-                              23
+                              {knobs.one || 0}
                             </div>
 
                             <div className='col-span-3'>
                               Knob #2
                             </div>
                             <div>
-                              23
+                              {knobs.two || 0}
                             </div>
 
                             <div className='col-span-3'>
                               Knob #3
                             </div>
                             <div>
-                              23
+                              {knobs.three || 0}
                             </div>
 
                             <div className='col-span-3'>
                               Knob #4
                             </div>
                             <div>
-                              23
+                              {knobs.four || 0}
                             </div>
 
                             <div className='col-span-3'>
                               T.Ambiente
                             </div>
                             <div>
-                              23
+                              {room_temperature || 0}
                             </div>
                           </div>
 
                           <div className='mt-6 border-2 rounded-md p-2'>
                             <p>
-                              <textarea disabled value='Texto'></textarea>
+                              <textarea disabled value={notes}></textarea>
                             </p>
                           </div>
                         </AccordionPanel>
-                      </AccordionItem>
+                      </AccordionItem>)}
 
                     </Accordion>
                     <div className='flex justify-end'>
