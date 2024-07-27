@@ -128,6 +128,10 @@ export default function Home() {
   const setRoomTemperature = useMachineConfigStore( state => state.setRoomTemperature )
   const setNote = useMachineConfigStore( state => state.setNote )
   const machineCombinations = useMachineConfigStore( state => state.combinations )
+  const resetMConfigData = useMachineConfigStore( state => state.reset )
+  const knobsData = useMachineConfigStore( state => state.knobs )
+  const temperatureData = useMachineConfigStore( state => state.room_temperature )
+  const notesData = useMachineConfigStore( state => state.notes )
 
   /** fin controladores */
 
@@ -235,42 +239,42 @@ export default function Home() {
                         <p>Knob #1</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-0" onChange={(e) => setKnobData('one' ,e)}/>
+                        <Input placeholder='0' type='number' value={knobsData.one} id="temperature-0" onChange={(e) => setKnobData('one' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>Knob #2</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-1" onChange={(e) => setKnobData('two' ,e)}/>
+                        <Input placeholder='0' type='number' value={knobsData.two} id="temperature-1" onChange={(e) => setKnobData('two' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>Knob #3</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-2" onChange={(e) => setKnobData('three' ,e)}/>
+                        <Input placeholder='0' type='number' value={knobsData.three} id="temperature-2" onChange={(e) => setKnobData('three' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>Knob #4</p>
                       </div>
                       <div>
-                        <Input placeholder='0' type='number' id="temperature-3" onChange={(e) => setKnobData('four' ,e)}/>
+                        <Input placeholder='0' type='number' value={knobsData.four} id="temperature-3" onChange={(e) => setKnobData('four' ,e)}/>
                       </div>
                       <div className='col-span-2'>
                         <p>T.Ambiente</p>
                       </div>
                       <div>
-                        <Input placeholder='0' id="temperature-4"  onChange={(e) => setRoomTemperature(e.target.value)}/>
+                        <Input placeholder='0' id="temperature-4" value={temperatureData} onChange={(e) => setRoomTemperature(e.target.value)}/>
                       </div>
                     </div>
-                    <textarea className='border-2 rounded-md w-full p-2' placeholder='notas' rows={7} onChange={(e) => setNote(e.target.value)}></textarea>
+                    <textarea className='border-2 rounded-md w-full p-2' placeholder='notas' value={notesData} rows={7} onChange={(e) => setNote(e.target.value)}></textarea>
                   </CardBody>
                 </Card>
                 <Button colorScheme='green' className='w-full mt-4' onClick={saveCombination}>Registrar</Button>
 
-                <Card className='mt-8'>
+                { machineCombinations.length > 0 && <Card className='mt-8'>
                   <CardBody>
                     <Accordion allowToggle>
-                      { machineCombinations?.map(({knobs, notes, room_temperature}, i) => <AccordionItem>
+                      { machineCombinations?.map(({knobs, notes, room_temperature}, i) => <AccordionItem key={i}>
                         <h2>
                           <AccordionButton>
                             <Box as='span' flex='1' textAlign='left'>
@@ -327,17 +331,17 @@ export default function Home() {
 
                     </Accordion>
                     <div className='flex justify-end'>
-                      <Image src={Add} alt='add product' />
+                      <Image src={Add} alt='add product' onClick={resetMConfigData} />
                     </div>
                   </CardBody>
-                </Card>
+                </Card>}
               </TabPanel>
             </TabPanels>
           </Tabs>
 
-          <div className='text-center'>
+          {machineCombinations.length > 0 && <div className='text-center'>
             <Button colorScheme='green' className='w-[90%] lg:w-[95%] mt-4 mb-20' height={12}>Finalizar Jornada</Button>
-          </div>
+          </div>}
         </>
       }
 

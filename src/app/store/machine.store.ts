@@ -35,5 +35,12 @@ export const useMachineConfigStore = create((set, get) => ({
                 }
             ] 
         }))
+    },
+
+    reset: () => {
+        set((state) => {
+            const combinations = state.combinations;
+            return { ...initialState, combinations }
+        })
     }
 }))
