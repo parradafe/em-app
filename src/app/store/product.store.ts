@@ -33,5 +33,7 @@ export const useProductStore = create((set) => ({
 
     registerProduct: ( product : Partial<Product> ) => set((state: any) => ({ products: [...state.products, {...product, id: uuidv4()}]})),
 
+    loadProducts : (newProducts) => set({products: newProducts}),
+
     reset: () => set(initialState)
 }))

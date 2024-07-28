@@ -36,10 +36,11 @@ import {
   AccordionPanel,
   AccordionIcon,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useProductStore } from './store/product.store'
 import { useMixStore } from './store/mix.store'
 import { useMachineConfigStore } from './store/machine.store'
+import { readProducts, saveProduct } from './services/product.service'
 
 export default function Home() {
 
@@ -83,15 +84,27 @@ export default function Home() {
   const setProductUnit = useProductStore((state: any) => state.setUnit);
 
   const addProduct = useProductStore((state: any) => state.registerProduct);
+  const loadProducts = useProductStore((state: any) => state.loadProducts);
   const products = useProductStore((state: any) => state.products);
+  const [requestData, setRequestData] = useState(false);
 
 
-  const addProductHandler = () => {
-    addProduct({
-      name: productName.target.value,
-      unit: productUnit.target.value
-    })
+  const addProductHandler = async() => {
+    const name = productName.target.value;
+    const unit = productUnit.target.value;
+
+    await saveProduct({name, unit});
+    setRequestData(value => !value);
   }
+
+  useEffect(() => {
+    readProducts().then(data => {
+      console.log('reding db data')
+      loadProducts(data ?? []);
+    });
+
+  },[requestData])
+
 
   /** Mix */
 
@@ -141,7 +154,7 @@ export default function Home() {
       {currentPage === menu[0] &&
         <div>
           <h1 className='mb-4 text-[3.5rem] mt-5 font-extrabold text-center text-[#369C67]'> Productos </h1>
-          <Card className='mx-6 mt-6'>
+          <Card className='mx-6 mt-6 mb-20 h-[90%]'>
             <CardBody>
               <div className='mb-16'>
                 <label htmlFor="product-name">Nombre del producto</label>
@@ -153,7 +166,7 @@ export default function Home() {
                 <Button colorScheme='green' className='w-full' onClick={addProductHandler}>Guardar</Button>
               </div>
 
-              {data.length > 0 && <TableContainer>
+              {products?.length > 0 && <TableContainer>
                 <Table variant='striped' size='md'>
                   <Thead>
                     <Tr>
